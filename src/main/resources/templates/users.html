@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>List Users</title>
+	<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css" />
+	<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<div class="navbar-nav mr-auto">
+				<a class="navbar-brand" href="#">Home</a>
+			</div>
+			<div class="form-inline my-2 my-lg-0">
+				<p>
+					Welcome <b>[[${#request.userPrincipal.principal.fullName}]]</b>
+				</p>
+				<ul style="list-style-type: none;">
+					<li class="nav-item"><a class="nav-link" th:href="@{/logout}">Logout</a></li>
+				</ul>				
+			</div>
+		</div>
+	</nav>
+	<div class="container text-center">
+	<div>
+			<h1>List of Users</h1>
+			<div style="float: right;">
+				<form th:action="@{/users/page/1}">
+					<input type="hidden" name="sortField" th:value="${sortField}">
+					<input type="hidden" name="sortDir" th:value="${sortDir}">
+					Search: <input type="text" name="keyword" id="keyword" th:value="${keyword}" required />
+					<button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>&nbsp;
+
+					 <a href="javascript:clearSearch()" type="submit" class="btn btn-dark"><i class="fas fa-trash"></i></a>&nbsp; 
+
+				</form>
+			</div>
+		</div>
+		<div>
+			<table class="table table-striped table-bordered">
+				<thead class="thead-dark">
+					<tr>
+						<th>
+							<a th:href="@{'/users/page/' + ${currentPage} + '?sortField=id&sortDir=' + ${reverseSortDir}}">User
+								ID</a>
+						</th>
+						<th>
+							<a
+								th:href="@{'/users/page/' + ${currentPage} + '?sortField=email&sortDir=' + ${reverseSortDir}}">Email</a>
+						</th>
+						<th>
+							<a
+								th:href="@{'/users/page/' + ${currentPage} + '?sortField=firstName&sortDir=' + ${reverseSortDir}}">FirstName</a>
+						</th>
+						<th>
+							<a th:href="@{'/users/page/' + ${currentPage} + '?sortField=lastName&sortDir=' + ${reverseSortDir}}">LastName</a>
+						</th>
+						<th>
+							Action
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="user: ${listUsers}">
+						<td th:text="${user.id}"></td>
+						<td th:text="${user.email}"></td>
+						<td th:text="${user.firstName}"></td>
+						<td th:text="${user.lastName}"></td>
+						<td>
+							<a th:href="@{'/edit/' + ${user.id}}">Edit</a>
+							&nbsp;&nbsp;&nbsp;&nbsp;
+							<a th:href="@{'/delete/' + ${user.id}}">Delete</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<p>Total Items: [[${totalItems}]]</p>
+		<div th:if="${totalPages > 1}">
+					<a th:if="${currentPage > 1}"
+						th:href="@{'/users/page/1' + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">First</a>
+					<span th:unless="${currentPage > 1}">First</span>
+					&nbsp;&nbsp;
+		
+					<a th:if="${currentPage > 1}"
+						th:href="@{'/users/page/' + ${currentPage - 1} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">Previous</a>
+					<span th:unless="${currentPage > 1}">Previous</span>
+		
+					&nbsp;&nbsp;
+		
+					<span th:each="i: ${#numbers.sequence(1, totalPages)}">
+						<a th:if="${currentPage != i}"
+							th:href="@{'/users/page/' + ${i} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">[[${i}]]</a>
+						<span th:unless="${currentPage != i}">[[${i}]]</span>
+						&nbsp;
+					</span>
+		
+					<a th:if="${currentPage < totalPages}"
+						th:href="@{'/users/page/' + ${currentPage + 1} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">Next</a>
+					<span th:unless="${currentPage < totalPages}">Next</span>
+					&nbsp;&nbsp;
+		
+					<a th:if="${currentPage < totalPages}"
+						th:href="@{'/users/page/' + ${totalPages} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">Last</a>
+					<span th:unless="${currentPage < totalPages}">Last</span>
+		</div>
+	</div>
+	<script type="text/javascript">
+		function clearSearch() {
+			window.location = "[[@{/users}]]";
+		}
+	</script>
+</body>
+</html>
